@@ -1,72 +1,84 @@
-// import logo from './logo.svg';
-// import './App.css';
-import React from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import React, { useState } from "react";
 
-{
-  /* 函数式组件 (更推荐)*/
+{/* 虽然App按类组件还是函数组件的方式进行定义都行，但是优先采用函数组件的定义方式 */}
+{/* useful link: https://blog.devgenius.io/how-to-pass-data-from-child-to-parent-in-react-33ed99a90f43 */}
+function App() {
+  const [count, setCount]  = React.useState(0);
+  const changeCount = (change) => {
+    setCount(count + change);
+  } 
+
+  return (
+    <div>
+      {/* 父组件App向利用props子组件Counter传递数据 */}
+      <Counter text="当前计数:" count={count} />
+      {/* 父组件利用回调函数的参数 (此处为change变量) 获得子组件传递的数据 */}
+      <Button changeCount={changeCount}/>
+    </div>
+  );
 }
-// function App() {
-//   return (
-//       <h2>我叫做App组件</h2>
-//   );
+
+// class App extends React.Component {
+//   constructor() {
+//     super();
+//     this.state = {
+//       count: 0
+//     }
+//   }
+//   render() {
+//     return   (
+//       <div>
+//         {/* 父组件App向利用props子组件Counter传递数据 */}
+//         <Counter text="当前计数:" count={this.state.count} />
+//         {/* <Button changeCount={this.changeCount.bind(this)}/> */}
+//         <Button changeCount={(change, e) => this.changeCount(change)}/>
+//       </div>
+//     );
+//   }
+
+//   changeCount(change) {
+//     this.setState({
+//       count: this.state.count + change
+//     });
+//   }
 // }
 
 {
-  /* 类组件 （只有类组件才存在 lifecycle methods）*/
-  /* 关于生命周期方法的图解： https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/*/
+  /* Counter组件用于展示： 父组件向子组件传递数据 */
 }
-class App extends React.Component {
-  constructor() {
-    super();
+class Counter extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <div>
+        <h2>{this.props.text} {this.props.count}</h2>
+      </div>
+    );
+  }
+}
 
-    this.state = {
-      hiddenBtnComponent: false,
-    };
-    console.log("类组件App调用contructor方法");
+{
+  /* Button组件用于从子组件向父组件 “传递” 数据 */
+  /* （ 父子组件之间的数据流向是单向的，也就是只能 parent => children, 但可以另辟蹊径 ） */
+}
+class Button extends React.Component {
+  constructor(props) {
+    super(props);
   }
 
   render() {
     return (
       <div>
-        <h2>我是一个App组件</h2>
-        <hr />
-        {this.state.hiddenBtnComponent ? null : <Btn />}
-        <button onClick={(e) => this.displayBtnComponent()}>
-          移除Btn类组件
-        </button>
+        <button onClick={e => this.props.changeCount(1)}>+1</button>
+        <button onClick={e => this.props.changeCount(-1)}>-1</button>
       </div>
     );
   }
-
-  displayBtnComponent() {
-    this.setState({
-      hiddenBtnComponent: true,
-    });
-  }
-
-  componentDidMount() {
-    console.log("类组件App已经完成了mount");
-  }
-
-  {/* 由于App中嵌套了Btn，Btn在unmount之前会执行 */}
-  componentDidUpdate() {
-    console.log("类组件App已经完成了update");
-  }
 }
 
-class Btn extends React.Component {
-  constructor() {
-    super();
-  }
-  render() {
-    return <h2>我是一个类组件Btn</h2>;
-  }
-  componentDidMount() {
-    console.log("类组件Btn已经完成了mount");
-  }
-  componentWillUnmount() {
-    console.log("类组件Btn即将被unmount");
-  }
-}
 
 export default App;
