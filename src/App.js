@@ -1,54 +1,47 @@
+import React, { Component, createRef, useRef } from "react";
 
-import React, { PureComponent } from 'react'
-import {EventEmitter} from 'events'
 
-{/* EventEmitter的使用请查看 `events` module 下的 README 文件*/}
-const emitter = new EventEmitter();
-
-export default class App extends PureComponent {
-  render() {
-    return (
-      <div>
-        <Home/>
-        <Profile />
-      </div>
-    )
-  }
-}
-
-class Home extends PureComponent {
-  render() {
-
-    return (
-      <div>
-        <h2>Home</h2>
-      </div>
-    )
-  }
-}
-
-class Profile extends PureComponent {
-  componentDidMount() {
-    emitter.on('sayHello', this.sayHelloToHome);
+{/* 使用Refs来操作DOM */}
+{/* refs作用和state差不多，都可用来为组件保存数据，但是ref指向的数据是可变的, 并且值的改变也不会触发re-render */}
+export default function Form() {
+  const inputRef = useRef(null);
+  const handleClick = () => {
+    inputRef.current.focus();
   };
-  
-  componentWillUnmount() {
-    emitter.off('sayHello', this.sayHelloToHome);
-  }
 
-  sayHelloToHome(message, name)  {
-    console.log(message + ', ' + name);
-  }
-
-  render() {
-    return (
-      <div>
-        <h2>Profile</h2>
-        <button onClick={e => emitter.emit('sayHello', 'Hi', 'home')}>向Home打招呼</button>
-      </div>
-    )
-  }
+  return (
+    <div>
+      <input ref={inputRef} />
+      <button onClick={handleClick}>Focus the input</button>
+    </div>
+  );
 }
 
 
+// export default class Form extends Component {
+//   constructor(props) {
+//     super(props);
 
+//     this.inputRef = createRef();
+//   }
+
+//   handleClick = () => {
+//     this.inputRef.current.focus();
+//   };
+
+//   render() {
+//     return (
+//       <div>
+//         <input ref={this.inputRef} />
+//         {/* 不知道为什么下面这一种写法不行，可能是bug吧 */}
+//         {/* <button onClick={ e => this.handleClick}>Focus the text</button> */}
+//         <button onClick={this.handleClick}>Focus the text</button>
+//       </div>
+//     );
+//   }
+
+//   // handleClick() {
+//   //   console.log('hello');
+//   //   this.inputRef.current.focus();
+//   // }
+// }
