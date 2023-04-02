@@ -1,83 +1,54 @@
-import React, { Component } from "react";
 
-// 创建Context
-const UserContext = React.createContext({
-  nickname: "aaaa",
-  level: -1,
-});
+import React, { PureComponent } from 'react'
+import {EventEmitter} from 'events'
 
-{
-  /* 在函数组件中使用API */
+{/* EventEmitter的使用请查看 `events` module 下的 README 文件*/}
+const emitter = new EventEmitter();
+
+export default class App extends PureComponent {
+  render() {
+    return (
+      <div>
+        <Home/>
+        <Profile />
+      </div>
+    )
+  }
 }
-// function ProfileHeader() {
-//   return (
-//     <UserContext.Consumer>
-//       {
-//         value => {
-//           return (
-//             <div>
-//               <h2>用户昵称: {value.nickname}</h2>
-//               <h2>用户等级: {value.level}</h2>
-//             </div>
-//           )
-//         }
-//       }
-//     </UserContext.Consumer>
-//   )
-// }
 
-{
-  /* 在类组件中使用 Context API */
+class Home extends PureComponent {
+  render() {
+
+    return (
+      <div>
+        <h2>Home</h2>
+      </div>
+    )
+  }
 }
-class ProfileHeader extends Component {
-  constructor(props) {
-    super(props);
+
+class Profile extends PureComponent {
+  componentDidMount() {
+    emitter.on('sayHello', this.sayHelloToHome);
+  };
+  
+  componentWillUnmount() {
+    emitter.off('sayHello', this.sayHelloToHome);
+  }
+
+  sayHelloToHome(message, name)  {
+    console.log(message + ', ' + name);
   }
 
   render() {
     return (
       <div>
-        <h2>用户昵称: {this.context.nickname}</h2>
-        <h2>用户等级: {this.context.level}</h2>
+        <h2>Profile</h2>
+        <button onClick={e => emitter.emit('sayHello', 'Hi', 'home')}>向Home打招呼</button>
       </div>
-    );
+    )
   }
 }
-// 使用Context： 指明向哪个Context请求数据
-ProfileHeader.context = UserContext;
 
-function Profile(props) {
-  return (
-    <div>
-      <ProfileHeader />
-      <ul>
-        <li>设置1</li>
-        <li>设置2</li>
-        <li>设置3</li>
-        <li>设置4</li>
-      </ul>
-    </div>
-  );
-}
 
-export default class App extends Component {
-  constructor(props) {
-    super(props);
 
-    this.state = {
-      nickname: "kobe",
-      level: 99,
-    };
-  }
-
-  render() {
-    return (
-      <div>
-        {/* 提供Context：当子组件请求数据时，UserContext.Provider组件会把value属性的值给它 */}
-        <UserContext.Provider value={this.state}>
-          <Profile />
-        </UserContext.Provider>
-      </div>
-    );
-  }
-}
