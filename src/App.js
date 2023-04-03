@@ -1,47 +1,97 @@
-import React, { Component, createRef, useRef } from "react";
+import React, { Component } from "react";
 
+{/* 受控组件 (这里的组件其实是广义组件，包含了标签) */}
+{/* 子组件/标签的行为会由父组件控制 */}
+export default class App extends Component {
 
-{/* 使用Refs来操作DOM */}
-{/* refs作用和state差不多，都可用来为组件保存数据，但是ref指向的数据是可变的, 并且值的改变也不会触发re-render */}
-export default function Form() {
-  const inputRef = useRef(null);
-  const handleClick = () => {
-    inputRef.current.focus();
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: ''
+    };
+  }
 
-  return (
-    <div>
-      <input ref={inputRef} />
-      <button onClick={handleClick}>Focus the input</button>
-    </div>
-  );
+  handleChange(event) {
+    // value被重新赋值后，将重新渲染input标签从而将
+    this.setState({
+      // 这里的event.target其实就是 input标签
+      value: event.target.value
+    });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    console.log("You typed" + this.state.value);
+  }
+
+  render() {
+    return (
+      <div>
+        <form onSubmit={e => this.handleSubmit(e)}>
+          <label>
+            name:
+            <input type="text" name="name" value={this.state.value} onChange={e => this.handleChange(e)}/>
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
+      </div>
+    )
+  }
 }
 
+// import React, {useState} from "react";
+// export default function App() {
+//   const [value, setValue] = useState('');
 
-// export default class Form extends Component {
-//   constructor(props) {
-//     super(props);
-
-//     this.inputRef = createRef();
+//   const handleChange = (e) => {
+//     setValue(e.target.value);
 //   }
 
-//   handleClick = () => {
-//     this.inputRef.current.focus();
-//   };
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     console.log(value);
+//   }
+
+//   return (
+//     <div>
+//       <form onSubmit={handleSubmit}>
+//         <label>
+//           name:
+//           <input type="text" name="name" value={value} onChange={handleChange}></input>
+//         </label>
+//         <input type="submit" value="Submit"></input>
+        
+//       </form>
+//     </div>
+//   );
+// }
+
+{/* 非受控组件 (这里的组件其实是广义组件，包含了标签) */}
+{/* 子组件/标签的行为不受父标签的约束 */}
+// export default class App extends Component {
+
+//   constructor(props) {
+//     super(props);
+//     this.input = React.createRef();
+//   }
+
+//   handleSubmit(event) {
+//     event.preventDefault();
+//     console.log("You typed " + this.input.current.value);
+//   }
 
 //   render() {
 //     return (
 //       <div>
-//         <input ref={this.inputRef} />
-//         {/* 不知道为什么下面这一种写法不行，可能是bug吧 */}
-//         {/* <button onClick={ e => this.handleClick}>Focus the text</button> */}
-//         <button onClick={this.handleClick}>Focus the text</button>
+//         <form onSubmit={e => this.handleSubmit(e)}>
+//           <label>
+//             name:
+//             <input type="text" name="name" ref={this.input}/>
+//           </label>
+//           <input type="submit" value="Submit" />
+//         </form>
 //       </div>
-//     );
+//     )
 //   }
-
-//   // handleClick() {
-//   //   console.log('hello');
-//   //   this.inputRef.current.focus();
-//   // }
 // }
+
